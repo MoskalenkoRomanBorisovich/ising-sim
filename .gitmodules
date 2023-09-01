@@ -1,0 +1,3 @@
+[submodule "source/mc_lib"]
+	path = source/mc_lib
+	url = https://github.com/ev-br/mc_lib.git
