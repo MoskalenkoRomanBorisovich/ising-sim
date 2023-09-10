@@ -6,7 +6,7 @@
 
 
 
-void IsingSimImpl::iteration()
+void IsingSimImpl::iterate()
 {
     std::vector<site_t> pocket;
     std::unordered_set<site_t> cluster;

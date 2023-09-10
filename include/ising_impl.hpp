@@ -25,7 +25,16 @@ public:
         const Generator_t::result_type seed = 12345,
         const std::vector<T>& cur_spins = std::vector<int_fast8_t>());
 
-    void iteration();
+    void iterate();
+    inline void iterate(uint_fast32_t n_steps)
+    {
+        for (uint_fast32_t i = 0; i < n_steps; ++i) {
+            iterate();
+        }
+    };
+
+    template<typename T>
+    void iterate(uint_fast32_t n_measures, T& aggregator, uint_fast32_t n_burn_in = 0, uint_fast32_t measure_steps = 1);
 
     // getters
     inline const std::vector<int8_t>& get_spins() const { return m_cur_spins; };
@@ -100,4 +109,15 @@ IsingSimImpl::IsingSimImpl(
 
     calc_cur_ene_spins();
     calc_cur_mag();
+}
+
+template<typename T>
+inline void IsingSimImpl::iterate(uint_fast32_t n_measures, T& aggregator, uint_fast32_t n_burn_in, uint_fast32_t measure_steps)
+{
+    assert(0 < measure_steps);
+    iterate(n_burn_in * measure_steps);
+    for (uint_fast32_t block = 0, block_end = n_measures; block < block_end; ++block) {
+        iterate(measure_steps);
+        aggregator(get_mag(), get_ene(), get_spins());
+    }
 }
