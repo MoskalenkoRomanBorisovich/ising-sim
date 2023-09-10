@@ -16,14 +16,14 @@ public:
     using site_t = uint_fast32_t;
     typedef std::mt19937_64 Generator_t;
 
-    template<typename S, typename P>
+    template<typename S, typename P, typename T = spin_t>
     IsingSimImpl(
         const std::vector<S>& neighbors,
         const std::vector<P>& nei_start,
         const double beta,
         const double J,
         const Generator_t::result_type seed = 12345,
-        const std::vector<int>* cur_spins = nullptr);
+        const std::vector<T>& cur_spins = std::vector<int_fast8_t>());
 
     void iteration();
 
@@ -34,6 +34,10 @@ public:
     inline const site_t get_N() { return m_N; };
     inline const double get_beta() { return m_beta; };
     inline const double get_J() { return m_J; };
+
+    // states
+    void get_state() const;
+    void set_state() const;
 
 private:
     const site_t m_N; // number of spins
@@ -67,14 +71,14 @@ private:
 
 
 // templates definition
-template<typename S, typename P>
+template<typename S, typename P, typename T = IsingSimImpl::spin_t>
 IsingSimImpl::IsingSimImpl(
     const std::vector<S>& neighbors,
     const std::vector<P>& nei_start,
     const double beta,
     const double J,
     const Generator_t::result_type seed,
-    const std::vector<int>* cur_spins) :
+    const std::vector<T>& cur_spins) :
     m_N(nei_start.size() - 1),
     m_N_sqrt(std::sqrt(m_N)),
     m_beta(beta),
@@ -82,7 +86,7 @@ IsingSimImpl::IsingSimImpl(
     m_neighbors(neighbors.begin(), neighbors.end()),
     m_nei_start(nei_start.begin(), nei_start.end()),
     m_cur_step(0),
-    // m_dis(0., 1.),
+    m_dis(0., 1.),
     m_accept_ratio(1.0 - std::exp(-2.0 * m_beta))
 {
     assert(m_nei_start.size() == m_N + 1);
@@ -90,10 +94,10 @@ IsingSimImpl::IsingSimImpl(
     sort_neighbors(m_nei_start, m_neighbors);
     m_rng.seed(seed);
     m_dis.reset();
-    if (cur_spins) {
-        assert(cur_spins->size() == m_N);
+    if (!cur_spins.empty()) {
+        assert(cur_spins.size() == m_N);
         m_cur_spins.clear();
-        std::copy(cur_spins->begin(), cur_spins->end(), std::back_inserter(m_cur_spins));
+        std::copy(cur_spins.begin(), cur_spins.end(), std::back_inserter(m_cur_spins));
     }
     else
         random_spins();
