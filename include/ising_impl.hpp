@@ -35,10 +35,6 @@ public:
     inline const double get_beta() { return m_beta; };
     inline const double get_J() { return m_J; };
 
-    // states
-    void get_state() const;
-    void set_state() const;
-
 private:
     const site_t m_N; // number of spins
     const site_t m_N_sqrt;
@@ -70,7 +66,7 @@ private:
 };
 
 
-// templates definition
+// template functions
 template<typename S, typename P, typename T = IsingSimImpl::spin_t>
 IsingSimImpl::IsingSimImpl(
     const std::vector<S>& neighbors,
