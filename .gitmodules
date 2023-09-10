@@ -1,1 +1,4 @@
 
+[submodule "extern/mc_lib"]
+	path = extern/mc_lib
+	url = https://github.com/ev-br/mc_lib.git
