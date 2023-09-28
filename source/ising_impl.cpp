@@ -2,10 +2,10 @@
 #include "../include/ising_utils.hpp"
 #include <unordered_set>
 
-// namespace ising {
 
-
-
+/*
+    One step of cluster update
+*/
 void IsingSimImpl::iterate()
 {
     std::vector<site_t> pocket;
@@ -17,6 +17,8 @@ void IsingSimImpl::iterate()
     const int_fast8_t neg_spin_val = -spin_val;
     const int_fast8_t neg_spin_val2 = neg_spin_val * 2;
     while (!pocket.empty()) {
+        const site_t cur_i = pocket.size() * m_rand(); // select random pocket site
+        std::swap(pocket[cur_i], pocket.back());
         const site_t cur = pocket.back();
         pocket.pop_back();
         m_cur_spins[cur] = neg_spin_val;
@@ -49,7 +51,7 @@ void IsingSimImpl::random_spins()
 
 void IsingSimImpl::calc_cur_ene_spins()
 {
-    m_cur_ene_spins = 0;
+    m_cur_ene_spins = 0; // reset energy
     for (site_t site = 0; site < m_N; ++site) {
         for (site_t nei = m_nei_start[site], nei_end = m_nei_start[site + 1]; nei < nei_end; ++nei) {
             const site_t site1 = m_neighbors[nei];

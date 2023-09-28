@@ -9,6 +9,8 @@ int main()
     std::cout << std::endl;
     test_3();
     std::cout << std::endl;
+    test_4();
+    std::cout << std::endl;
     return 0;
 }
 

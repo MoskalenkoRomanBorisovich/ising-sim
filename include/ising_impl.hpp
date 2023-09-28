@@ -118,6 +118,6 @@ inline void IsingSimImpl::iterate(uint_fast32_t n_measures, T& aggregator, uint_
     iterate(n_burn_in * measure_steps);
     for (uint_fast32_t block = 0, block_end = n_measures; block < block_end; ++block) {
         iterate(measure_steps);
-        aggregator(get_mag(), get_ene(), get_spins());
+        aggregator(get_mag(), get_ene());
     }
 }
