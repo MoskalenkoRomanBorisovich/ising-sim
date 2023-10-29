@@ -5,8 +5,9 @@
 #include "../include/ising_impl.hpp"
 
 
-void test()
+void test_square32()
 {
+    std::cout << "Run test_square32\n";
     const uint32_t L = 32;
     const uint32_t N = L * L;
 
@@ -62,6 +63,6 @@ void test()
 }
 
 int main() {
-    test();
+    test_square32();
     return 0;
 }
