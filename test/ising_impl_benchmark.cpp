@@ -47,8 +47,10 @@ void test()
         return;
         };
 
+    clock_t start = clock();
     isim.iterate(n_iterations, agg, burn_in, 1);
-
+    clock_t end = clock();
+    std::cout << "time: " << (end - start) / (double)CLOCKS_PER_SEC << std::endl;
 
     double mag_mean = mag / (double)(N * n_iterations);
     double mag_abs_mean = mag_a / (double)(N * n_iterations);

@@ -11,14 +11,12 @@ void IsingSimImpl::iterate()
     std::vector<site_t> pocket;
     std::unordered_set<site_t> cluster;
     pocket.reserve(m_N_sqrt);
-    pocket.push_back((m_N * m_rand()));
+    pocket.push_back(m_rng() % m_N);
     cluster.insert(pocket.back());
-    const int_fast8_t spin_val = m_cur_spins[pocket.back()];
-    const int_fast8_t neg_spin_val = -spin_val;
-    const int_fast8_t neg_spin_val2 = neg_spin_val * 2;
-    while (!pocket.empty()) {
-        const site_t cur_i = pocket.size() * m_rand(); // select random pocket site
-        std::swap(pocket[cur_i], pocket.back());
+    const spin_t spin_val = m_cur_spins[pocket.back()];
+    const spin_t neg_spin_val = -spin_val;
+    const spin_t neg_spin_val2 = neg_spin_val * 2;
+    do {
         const site_t cur = pocket.back();
         pocket.pop_back();
         m_cur_spins[cur] = neg_spin_val;
@@ -38,7 +36,7 @@ void IsingSimImpl::iterate()
                 m_cur_ene_spins += 2;
             }
         }
-    }
+    } while (!pocket.empty());
 }
 
 void IsingSimImpl::random_spins()
