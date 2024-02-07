@@ -29,7 +29,8 @@ void test()
     nei_start.push_back(N * 4);
 
 
-    IsingSimImpl isim(
+    IsingSimImpl isim;
+    isim.init(
         nei,
         nei_start,
         1.0,
@@ -49,7 +50,8 @@ void test()
         };
     } agg;
 
-    isim.iterate(n_iterations, agg, burn_in, 1);
+    isim.burn_in(burn_in);
+    isim.iterate(n_iterations, agg, 1);
 
     double mag_mean = agg.mag.mean() / N;
     double mag_a_mean = agg.mag_a.mean() / N;

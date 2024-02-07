@@ -16,7 +16,8 @@ void test_1()
     const std::vector<int> nei_start = { 0, 2, 4, 6 };
 
 
-    IsingSimImpl isim(
+    IsingSimImpl isim;
+    isim.init(
         nei,
         nei_start,
         1.0,
@@ -51,7 +52,8 @@ void test_2()
     nei.push_back(0);
     nei_start.push_back(N * 2);
 
-    IsingSimImpl isim(
+    IsingSimImpl isim;
+    isim.init(
         nei,
         nei_start,
         1.0,
@@ -90,7 +92,8 @@ void test_3()
     nei.push_back(0);
     nei_start.push_back(N * 2);
 
-    IsingSimImpl isim(
+    IsingSimImpl isim;
+    isim.init(
         nei,
         nei_start,
         1.0,
@@ -107,7 +110,8 @@ void test_3()
         mag_a += std::abs(mag_);
         return;
         };
-    isim.iterate(n_iterations, agg, burn_in, 1);
+    isim.burn_in(burn_in);
+    isim.iterate(n_iterations, agg, 1);
 
     double mag_mean = mag / (double)(N * n_iterations);
     double mag_abs_mean = mag_a / (double)(N * n_iterations);
@@ -156,7 +160,8 @@ void test_4()
     nei_start.push_back(N * 4);
 
 
-    IsingSimImpl isim(
+    IsingSimImpl isim;
+    isim.init(
         nei,
         nei_start,
         1.0,
@@ -175,7 +180,8 @@ void test_4()
         return;
         };
 
-    isim.iterate(n_iterations, agg, burn_in, 1);
+    isim.burn_in(burn_in);
+    isim.iterate(n_iterations, agg, 1);
 
 
     double mag_mean = mag / (double)(N * n_iterations);
@@ -185,4 +191,62 @@ void test_4()
     std::cout << "mag_abs: " << mag_abs_mean << std::endl;
     assert(std::abs(mag_mean) < 0.01);
     assert(mag_abs_mean > 0.95);
+}
+
+/*
+    return exact energy value for 1D ising model with open boundary conditions
+*/
+double exact_1D_ising_energy(double L, double beta)
+{
+    double th = tanh(beta);
+    return -th * (1 + pow(th, L - 2)) / (1 + pow(th, L));
+}
+
+/*
+    test vs exact values
+*/
+
+void test_5()
+{
+    const uint32_t N = 250;
+
+    std::vector<IsingSimImpl::site_t> nei = { 1, N - 1 };
+    std::vector<IsingSimImpl::site_t> nei_start = { 0, 2 };
+    for (uint32_t i = 1; i < N - 1; ++i) {
+        nei.push_back(i - 1);
+        nei.push_back(i + 1);
+        nei_start.push_back(i * 2 + 2);
+    }
+    nei.push_back(N - 2);
+    nei.push_back(0);
+    nei_start.push_back(N * 2);
+    double beta = 1.0;
+    IsingSimImpl isim;
+    isim.init(
+        nei,
+        nei_start,
+        beta,
+        1.0,
+        123);
+
+    const uint32_t burn_in = 500000;
+    const uint32_t n_iterations = 1000000;
+
+    double energy = 0.0;
+    const auto& agg = [&energy](int mag_, double ene_) {
+        energy += ene_;
+        return;
+        };
+    isim.burn_in(burn_in);
+    isim.iterate(n_iterations, agg, 1);
+
+    double energy_mean = energy / (double)(N * n_iterations);
+    double energy_exact = exact_1D_ising_energy(N, beta);
+
+    std::cout << "energy_mean: " << energy_mean << std::endl;
+    std::cout << "energy_exact: " << energy_exact << std::endl;
+    std::cout << "difference: " << std::abs(energy_exact - energy_mean) << std::endl;
+
+    constexpr double epsilon = 1e-3;
+    assert(std::abs(energy_exact - energy_mean) < epsilon);
 }
