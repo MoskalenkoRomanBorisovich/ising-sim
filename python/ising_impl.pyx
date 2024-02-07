@@ -19,10 +19,8 @@ cdef class IsingSim():
             seed,
             cur_spins)
 
-    def iterate(self):
-        self._impl.iterate()
-    def iterate(self, size_t n_iterations):
-        self._impl.burn_in(n_iterations)
+    def iterate(self, size_t n_iterations = 1):
+        self._impl.iterate(n_iterations)
     def burn_in(self, size_t n_iterations):
         self._impl.burn_in(n_iterations)
 
