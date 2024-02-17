@@ -80,7 +80,7 @@ void benchmark_aggregators()
         for (uint32_t j = 0; j < L; ++j) {
             const uint32_t idx = i * L + j;
             nei.push_back((N + idx - L) % N);
-            nei.push_back((N + idx - L) % N);
+            nei.push_back((N + idx + L) % N);
             nei.push_back((N + idx - 1) % N);
             nei.push_back((N + idx + 1) % N);
             nei_start.push_back(idx * 4);

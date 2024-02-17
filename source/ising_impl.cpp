@@ -53,12 +53,13 @@ void IsingSimImpl::calc_cur_ene_spins()
     for (site_t site = 0; site < m_N; ++site) {
         for (site_t nei = m_nei_start[site], nei_end = m_nei_start[site + 1]; nei < nei_end; ++nei) {
             const site_t site1 = m_neighbors[nei];
-            if (site > site1) // neighbors are sorted, prevents double checking 
-                m_cur_ene_spins += m_cur_spins[site] * m_cur_spins[site1];
-            else
-                break;
+            //if (site > site1) // neighbors are sorted, prevents double checking 
+            m_cur_ene_spins += m_cur_spins[site] * m_cur_spins[site1];
+            //else
+            //    break;
         }
     }
+    m_cur_ene_spins /= 2;
 }
 
 void IsingSimImpl::calc_cur_mag()
