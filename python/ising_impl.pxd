@@ -10,7 +10,7 @@ cdef extern from "ising_impl.hpp":
             int seed,
             vector[T]& cur_spins) except +
 
-        void iterate(size_t n_iterations)
+        void iterate()
         void burn_in(size_t n_iterations)
         void iterate[T](size_t n_measures, T aggregator, size_t measure_steps)
 
