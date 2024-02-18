@@ -1,42 +1,60 @@
 #include "../include/ising_impl.hpp"
 #include "../include/ising_utils.hpp"
 #include <unordered_set>
+#include "ising_impl.hpp"
 
 
+template<IsingSimImpl::spin_t spin_val>
+void IsingSimImpl::recalculate_flipped_cluster_impl(const std::vector<site_t>& flipped_cluster)
+{
+    m_cur_mag -= 2 * spin_val * flipped_cluster.size();
+
+    for (site_t cluster_pos = 0, cluster_end = flipped_cluster.size(); cluster_pos < cluster_end; ++cluster_pos) {
+        const site_t cur = flipped_cluster[cluster_pos];
+        for (site_t nei_id = m_nei_start[cur], nei_end = m_nei_start[cur + 1]; nei_id < nei_end; ++nei_id) {
+            const site_t nei = m_neighbors[nei_id];
+            switch (m_cur_spins[nei])
+            {
+            case spin_val:
+                m_cur_ene_spins -= 2;
+                break;
+
+            case -spin_val:
+                m_cur_ene_spins += 2;
+                break;
+            default:
+                break;
+            }
+        }
+    }
+    for (site_t cluster_pos = 0, cluster_end = flipped_cluster.size(); cluster_pos < cluster_end; ++cluster_pos) {
+        const site_t cur = flipped_cluster[cluster_pos];
+        m_cur_spins[cur] = -spin_val;
+    }
+}
 /*
     One step of cluster update
 */
 void IsingSimImpl::iterate()
 {
-    std::vector<site_t> pocket;
-    std::unordered_set<site_t> cluster;
-    pocket.reserve(m_N_sqrt);
-    pocket.push_back(m_rng() % m_N);
-    cluster.insert(pocket.back());
-    const spin_t spin_val = m_cur_spins[pocket.back()];
-    const spin_t neg_spin_val = -spin_val;
-    const spin_t neg_spin_val2 = neg_spin_val * 2;
-    do {
-        const site_t cur = pocket.back();
-        pocket.pop_back();
-        m_cur_spins[cur] = neg_spin_val;
-        m_cur_mag += neg_spin_val2;
+    std::vector<site_t> cluster;
+    cluster.reserve(m_N_sqrt);
+    cluster.push_back(m_rng() % m_N);
+    const spin_t spin_val = m_cur_spins[cluster[0]];
+    m_cur_spins[cluster[0]] = 0;
+    for (site_t cluster_pos = 0; cluster_pos < cluster.size(); ++cluster_pos) {
+        const site_t cur = cluster[cluster_pos];
         for (site_t nei_id = m_nei_start[cur], nei_end = m_nei_start[cur + 1]; nei_id < nei_end; ++nei_id) {
             const site_t nei = m_neighbors[nei_id];
             if (spin_val == m_cur_spins[nei]) {
-                m_cur_ene_spins -= 2;
-                if (cluster.count(nei) == 0) {
-                    if (m_rand() < m_accept_ratio) {
-                        cluster.insert(nei);
-                        pocket.push_back(nei);
-                    }
+                if (m_rand() < m_accept_ratio) {
+                    cluster.push_back(nei);
+                    m_cur_spins[nei] = 0;
                 }
             }
-            else {
-                m_cur_ene_spins += 2;
-            }
         }
-    } while (!pocket.empty());
+    }
+    recalculate_flipped_cluster(cluster, spin_val);
 }
 
 void IsingSimImpl::random_spins()
@@ -61,6 +79,7 @@ void IsingSimImpl::calc_cur_ene_spins()
     }
     m_cur_ene_spins /= 2;
 }
+
 
 void IsingSimImpl::calc_cur_mag()
 {

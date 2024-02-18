@@ -79,8 +79,25 @@ private:
     void calc_cur_mag();
     void calc_cur_ene_spins(); // sum of spin[i] * spin[j]
 
-};
+    template<spin_t spin_val>
+    void recalculate_flipped_cluster_impl(const std::vector<site_t>& flipped_cluster);
+    void recalculate_flipped_cluster(const std::vector<site_t>& flipped_cluster, const spin_t spin_val)
+    {
+        switch (spin_val)
+        {
+        case 1:
+            recalculate_flipped_cluster_impl<1>(flipped_cluster);
+            break;
 
+        case -1:
+            recalculate_flipped_cluster_impl<1>(flipped_cluster);
+            break;
+
+        default:
+            break;
+        }
+    }
+};
 
 // template functions
 template<typename S, typename P, typename T = IsingSimImpl::spin_t>
