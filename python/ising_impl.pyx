@@ -51,25 +51,23 @@ cdef class IsingSim():
         self._impl.burn_in(n_iterations)
 
 
+    def clear_buf(self):
+        self._impl.clear_buf()
+
     def get_spins(self):
         return self._impl.get_spins()
-
 
     def get_mag(self):
         return self._impl.get_mag()
 
-
     def get_ene(self):
         return self._impl.get_ene()
-
 
     def get_N(self):
         return self._impl.get_N()
 
-
     def get_beta(self):
         return self._impl.get_beta()
-
 
     def get_J(self):
         return self._impl.get_J()

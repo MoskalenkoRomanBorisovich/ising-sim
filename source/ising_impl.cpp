@@ -37,24 +37,23 @@ void IsingSimImpl::recalculate_flipped_cluster_impl(const std::vector<site_t>& f
 */
 void IsingSimImpl::iterate()
 {
-    std::vector<site_t> cluster;
-    cluster.reserve(m_N_sqrt);
-    cluster.push_back(m_rng() % m_N);
-    const spin_t spin_val = m_cur_spins[cluster[0]];
-    m_cur_spins[cluster[0]] = 0;
-    for (site_t cluster_pos = 0; cluster_pos < cluster.size(); ++cluster_pos) {
-        const site_t cur = cluster[cluster_pos];
+    m_cluster.clear();
+    m_cluster.push_back(m_rng() % m_N);
+    const spin_t spin_val = m_cur_spins[m_cluster[0]];
+    m_cur_spins[m_cluster[0]] = 0;
+    for (site_t cluster_pos = 0; cluster_pos < m_cluster.size(); ++cluster_pos) {
+        const site_t cur = m_cluster[cluster_pos];
         for (site_t nei_id = m_nei_start[cur], nei_end = m_nei_start[cur + 1]; nei_id < nei_end; ++nei_id) {
             const site_t nei = m_neighbors[nei_id];
             if (spin_val == m_cur_spins[nei]) {
                 if (m_rand() < m_accept_ratio) {
-                    cluster.push_back(nei);
+                    m_cluster.push_back(nei);
                     m_cur_spins[nei] = 0;
                 }
             }
         }
     }
-    recalculate_flipped_cluster(cluster, spin_val);
+    recalculate_flipped_cluster(m_cluster, spin_val);
 }
 
 void IsingSimImpl::random_spins()

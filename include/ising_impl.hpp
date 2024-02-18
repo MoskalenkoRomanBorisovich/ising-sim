@@ -51,9 +51,13 @@ public:
     inline const double get_beta() const { return m_beta; };
     inline const double get_J() const { return m_J; };
 
+    void clear_buf() {
+        m_cluster.clear();
+        m_cluster.shrink_to_fit();
+    }
+
 private:
     site_t m_N; // number of spins
-    site_t m_N_sqrt;
     double m_beta;
     double m_J;
 
@@ -72,6 +76,8 @@ private:
     std::uniform_real_distribution<double> m_dis;
 
     inline double m_rand() { return m_dis(m_rng); }
+
+    std::vector<site_t> m_cluster; // buffer for cluster algorithm
 
     // current model stats
     int_fast32_t m_cur_mag;
@@ -110,7 +116,6 @@ void IsingSimImpl::init(
     const std::vector<T>& cur_spins)
 {
     m_N = nei_start.size() - 1;
-    m_N_sqrt = std::sqrt(m_N);
     m_beta = beta;
     m_J = J;
     m_neighbors = std::vector<site_t>(neighbors.begin(), neighbors.end());

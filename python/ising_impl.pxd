@@ -13,6 +13,7 @@ cdef extern from "ising_impl.hpp":
         void iterate()
         void burn_in(size_t n_iterations)
         void iterate[T](size_t n_measures, T aggregator, size_t measure_steps)
+        void clear_buf()
 
         vector[int8_t] get_spins() const
         int32_t get_mag() const
