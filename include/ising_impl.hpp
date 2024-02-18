@@ -90,7 +90,7 @@ private:
             break;
 
         case -1:
-            recalculate_flipped_cluster_impl<1>(flipped_cluster);
+            recalculate_flipped_cluster_impl<-1>(flipped_cluster);
             break;
 
         default:
